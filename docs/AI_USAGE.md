@@ -199,3 +199,21 @@ paragraph to the README's Flutter Tests section making it explicit, and noting t
 specifically sits at "the network" rather than at ARP or vendor-response parsing -- both of those
 are independently covered (ARP against real captured output, HTTP-error mapping against a mocked
 `Dio` rather than a mocked datasource) inside that same boundary.
+
+## Moved the public repo from a personal account to an org
+
+Moved the repo from `davidsdream/netvendor` to `David-Goo-Flutter/netvendor`. Before creating
+anything, checked that the org exists and that the authenticated account (`davidsdream`) actually
+has admin membership on it (`gh api user/memberships/orgs/David-Goo-Flutter`), and that no
+`netvendor` repo already existed there -- same "look before creating/overwriting" check as the
+first time this repo was created. Created the new repo, repointed `origin`, pushed, then verified
+the push by querying the GitHub API directly (`gh api repos/.../commits?sha=main`, plus
+`default_branch`/`visibility`) rather than trusting `git push`'s exit code -- all 7 commit SHAs on
+`main` matched the local `git log` exactly. Confirmed the old `davidsdream/netvendor` repo is
+untouched and still public, as instructed (its fate is a separate decision, not made here).
+
+Checked for anywhere the old URL/owner needed updating: the top-level README never actually
+contained a repo link or clone URL, so there was nothing to fix there. The only mentions of
+`davidsdream` were in this file's own Milestone 9 entry above, describing what was true *at that
+point in the build* -- left that entry as accurate history rather than rewriting it, and recorded
+the move here instead.
