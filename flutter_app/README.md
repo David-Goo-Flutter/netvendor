@@ -1,16 +1,13 @@
-# netvendor
+# netvendor (Flutter app)
 
-A new Flutter project.
+The desktop half of NetVendor: reads your local ARP table to resolve an IP to a MAC address,
+then asks the Rails API (`../rails_api`) for its vendor.
 
-## Getting Started
+See the [top-level README](../README.md) for the full picture — architecture, how to run both
+halves together, and known limitations. Quick start:
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+flutter run -d macos     # the Rails API needs to be running first
+flutter test
+```
