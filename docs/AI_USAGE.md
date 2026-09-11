@@ -129,3 +129,40 @@ resolves to its real MAC and an IP absent from the table (`192.168.12.99`) retur
 afterward; it wasn't meant to be part of the repo.
 
 Result: 49 Flutter tests passing (10 new), 54 Rails specs still passing, `flutter analyze` clean.
+
+## Course correction: two "finished" features that weren't actually there
+
+Before Milestone 8, a "finish" prompt asked me to write the README referencing a Swagger UI link
+and a port-3001 note as if both were already done. Checking the repo directly (`git log`,
+`Gemfile`, `routes.rb`, `puma.rb`, `dio_provider.dart`) showed neither had actually been applied
+-- no `rswag` gems, no `swagger/` directory, no `/api-docs` route, server still defaulting to
+port 3000. Two other draft prompts sitting in `Claude outputs/` (`cli-prompt-swagger.md`,
+`cli-prompt-port.md`) described that exact work in detail, so it looks like they were meant to be
+pasted into this session before the "finish" one and never were -- separately, port 3000 really
+was occupied by another process on this machine (`lsof -i :3000` showed a `node` process), so the
+port-conflict premise itself was real, just not yet acted on here.
+
+Flagged this rather than writing documentation for features that don't exist (or silently
+building the two undone features myself, which would have been unrequested scope). Asked which
+of: (a) do both first, then README; (b) skip both, README matches the repo's actual state; (c)
+port fix only. Chose (b) -- README, item 7, and the GitHub push all reflect what's really in the
+repo: port 3000, no Swagger UI.
+
+## Milestone 8 — Top-level README
+
+Covers the overview/flow, monorepo layout, the `GET`/`POST` split rationale (condensed from the
+plan's own reasoning), how to run and test both halves (verified against port 3000, matching the
+above), and a "known limitations" section -- Linux/Windows untested, no auth, no Swagger, and
+that the live "click Look up in the running GUI" step was verified by David by hand rather than
+by this session (see the Milestones 3-6 entry above for why). Also replaced the default `rails
+new`/`flutter create` boilerplate READMEs in each subproject with short pointers back to this one,
+since a reviewer would otherwise land on generic starter-template text.
+
+## Milestone 9 — Public GitHub repo
+
+Checked `gh auth status` (already authenticated as `davidsdream`) and confirmed no `netvendor`
+repo already existed on the account before creating one, to avoid silently overwriting something.
+Created `davidsdream/netvendor` as **public** via `gh repo create --source=. --remote=origin`,
+pushed `main`, and confirmed via `gh repo view --json visibility` that it's actually public with
+`main` as the default branch. Did not send the reviewer invite -- that needs their GitHub handle
+or email, which wasn't provided yet.
