@@ -15,14 +15,11 @@ class LookupResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (error != null) return _StatusCard(icon: Icons.error_outline, color: Colors.red, message: error.toString());
 
+    // Nothing looked up yet -- the input field's own hint text already says
+    // "Enter an IP address and press \"Look up\".", so there's nothing to
+    // show here before a first result or error exists.
     final result = this.result;
-    if (result == null) {
-      return const _StatusCard(
-        icon: Icons.search,
-        color: Colors.grey,
-        message: 'Enter an IP address and press "Look up".',
-      );
-    }
+    if (result == null) return const SizedBox.shrink();
 
     return Card(
       child: Padding(

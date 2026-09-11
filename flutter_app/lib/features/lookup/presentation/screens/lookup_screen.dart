@@ -14,7 +14,12 @@ class LookupScreen extends ConsumerWidget {
     final lookupState = ref.watch(lookupControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('NetVendor')),
+      appBar: AppBar(
+        title: const Text(
+          'NetVendor',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

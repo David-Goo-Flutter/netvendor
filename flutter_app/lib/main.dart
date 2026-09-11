@@ -14,6 +14,7 @@ class NetVendorApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'NetVendor',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo)),
       home: const LookupScreen(),
     );

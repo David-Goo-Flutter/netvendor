@@ -217,3 +217,31 @@ contained a repo link or clone URL, so there was nothing to fix there. The only 
 `davidsdream` were in this file's own Milestone 9 entry above, describing what was true *at that
 point in the build* -- left that entry as accurate history rather than rewriting it, and recorded
 the move here instead.
+
+## UI polish round: six concrete fixes from screenshots
+
+The user proposed a larger redesign earlier (dark theme, `NavigationRail`, a Stats tab) via the
+brainstorming skill's bounded-path gate; that design is still awaiting approval. Separately, they
+sent screenshots with six specific, unambiguous style fixes to the *current* UI -- these didn't
+need another design/approval round, since there was no remaining ambiguity to explore, just
+direct instructions:
+
+1. Removed the debug banner (`debugShowCheckedModeBanner: false`).
+2. `LookupInputField`: wrapped the input row in `IntrinsicHeight` with `CrossAxisAlignment.stretch`
+   so the "Look up" button's height tracks the text field's actual rendered height instead of a
+   guessed fixed value.
+3. Same widget: gave the text field's `OutlineInputBorder` and the button's `RoundedRectangleBorder`
+   the same `BorderRadius` (a shared `_fieldRadius` constant) so they read as one control instead of
+   a pill button glued to a sharp-cornered field.
+4. `LookupScreen`: enlarged and bolded the "NetVendor" title.
+5. `LookupResultCard`: removed the separate bordered "Enter an IP address..." placeholder card;
+   that message now lives as the text field's own `hintText` instead (replacing the old
+   `"192.168.1.1"` example hint), and the card renders `SizedBox.shrink()` until there's a real
+   result or error.
+6. `RecentLookupsList`: wrapped the list itself in a `Card` with `Clip.antiAlias` so the rows and
+   dividers respect its rounded corners.
+
+Verified with `flutter analyze` (clean) and `flutter test` (49/49 still passing -- including the
+initial-state widget test that looks for the "Enter an IP address..." text, which still matches
+since Flutter renders `hintText` as a `Text` widget internally), then rebuilt the macOS app and
+screenshotted it to visually confirm all six against the original screenshots.

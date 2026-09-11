@@ -28,17 +28,22 @@ class RecentLookupsList extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(height: 8),
         Expanded(
-          child: recentLookups.when(
-            data: (lookups) => lookups.isEmpty
-                ? const Center(child: Text('No lookups yet.'))
-                : ListView.separated(
-                    itemCount: lookups.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
-                    itemBuilder: (context, index) => _RecentLookupTile(lookup: lookups[index]),
-                  ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, _) => Center(child: Text('Could not load history: $error')),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            margin: EdgeInsets.zero,
+            child: recentLookups.when(
+              data: (lookups) => lookups.isEmpty
+                  ? const Center(child: Text('No lookups yet.'))
+                  : ListView.separated(
+                      itemCount: lookups.length,
+                      separatorBuilder: (context, index) => const Divider(height: 1),
+                      itemBuilder: (context, index) => _RecentLookupTile(lookup: lookups[index]),
+                    ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, _) => Center(child: Text('Could not load history: $error')),
+            ),
           ),
         ),
       ],

@@ -11,6 +11,10 @@ class LookupInputField extends ConsumerStatefulWidget {
   ConsumerState<LookupInputField> createState() => _LookupInputFieldState();
 }
 
+// Shared by the text field's border and the button's shape so the two read
+// as one control, not two mismatched shapes glued together.
+const _fieldRadius = 12.0;
+
 class _LookupInputFieldState extends ConsumerState<LookupInputField> {
   final _controller = TextEditingController();
   bool _prefilled = false;
@@ -41,24 +45,30 @@ class _LookupInputFieldState extends ConsumerState<LookupInputField> {
 
     final isLoading = ref.watch(lookupControllerProvider).isLoading;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              labelText: 'IP address',
-              hintText: '192.168.1.1',
-              border: OutlineInputBorder(),
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                labelText: 'IP address',
+                hintText: 'Enter an IP address and press "Look up".',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(_fieldRadius)),
+                ),
+              ),
+              onSubmitted: (_) => _submit(),
             ),
-            onSubmitted: (_) => _submit(),
           ),
-        ),
-        const SizedBox(width: 12),
-        SizedBox(
-          height: 56,
-          child: FilledButton(
+          const SizedBox(width: 12),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(_fieldRadius)),
+              ),
+            ),
             onPressed: isLoading ? null : _submit,
             child: isLoading
                 ? const SizedBox(
@@ -68,8 +78,8 @@ class _LookupInputFieldState extends ConsumerState<LookupInputField> {
                   )
                 : const Text('Look up'),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
