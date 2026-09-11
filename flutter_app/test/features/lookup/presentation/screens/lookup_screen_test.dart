@@ -57,7 +57,7 @@ void main() {
     expect(find.text('found'), findsOneWidget);
   });
 
-  testWidgets('a failed lookup shows the error message', (tester) async {
+  testWidgets('an IP with no ARP entry shows the "not visible on the local network" message', (tester) async {
     when(() => repository.lookup('10.0.0.99')).thenThrow(ArpEntryNotFoundException('10.0.0.99'));
 
     await _pumpScreen(tester, repository);
@@ -67,5 +67,44 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('is not visible on the local network'), findsOneWidget);
+  });
+
+  testWidgets('an invalid IP format shows a validation error, without an ARP or API call', (tester) async {
+    when(() => repository.lookup('999.1.1.1')).thenThrow(InvalidIpAddressException('999.1.1.1'));
+
+    await _pumpScreen(tester, repository);
+
+    await tester.enterText(find.byType(TextField), '999.1.1.1');
+    await tester.tap(find.widgetWithText(FilledButton, 'Look up'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('"999.1.1.1" is not a valid IPv4 address.'), findsOneWidget);
+  });
+
+  testWidgets('both vendor providers failing shows a distinct "lookup failed" status, not an error banner', (tester) async {
+    when(() => repository.lookup('192.168.1.1')).thenAnswer(
+      (_) async => LookupResult(
+        id: 3,
+        ipAddress: '192.168.1.1',
+        macAddress: 'aa:bb:cc:dd:ee:ff',
+        vendor: null,
+        status: LookupStatus.error,
+        createdAt: DateTime.utc(2026, 1, 1),
+        cached: false,
+      ),
+    );
+
+    await _pumpScreen(tester, repository);
+
+    await tester.enterText(find.byType(TextField), '192.168.1.1');
+    await tester.tap(find.widgetWithText(FilledButton, 'Look up'));
+    await tester.pumpAndSettle();
+
+    // This is Rails still recording the attempt (a successful response with
+    // status "error"), so it renders as a result card, not the error banner
+    // that ArpEntryNotFoundException/InvalidIpAddressException trigger above.
+    expect(find.text('lookup failed'), findsOneWidget);
+    expect(find.text('Unknown'), findsOneWidget);
+    expect(find.text('aa:bb:cc:dd:ee:ff'), findsOneWidget);
   });
 }

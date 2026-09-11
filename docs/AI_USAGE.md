@@ -102,4 +102,30 @@ repository and never touch the real network stack, so they couldn't have caught 
   `cliclick`/equivalent was installed. That exact code path (`LookupInputField` → `lookupControllerProvider`
   → `LookupResultCard`) is covered by the widget tests against a mocked repository, and the ARP parser and
   the Rails `POST /lookups` endpoint were each independently verified against real data, so the only
-  unverified link is the GUI click itself -- worth a manual check before considering the app fully done.
+  unverified link was the GUI click itself -- **the human (David) confirmed this manually** before Milestone 7.
+
+## Milestone 7 — Error-case sweep
+
+Went through each error case end-to-end, checking the actual UI state produced, not just the HTTP status
+underneath it. Found one real gap while doing this: `LookupRemoteDatasource`'s HTTP-error-to-domain-exception
+mapping (`_mapError`) was only ever exercised through a *mocked* `LookupRemoteDatasource` in the repository
+and controller tests -- meaning the code that actually parses a Dio response/exception had zero direct
+coverage. Added `test/features/lookup/data/datasources/lookup_remote_datasource_test.dart`, mocking `Dio`
+itself (a standard pattern: mocktail's `noSuchMethod`-based mocking doesn't care about a method's generic
+type argument, so `class _MockDio extends Mock implements Dio {}` works despite `Dio.get<T>`/`post<T>` being
+generic) to stub realistic responses/`DioException`s and verify the real mapping logic.
+
+| Case | Where it's decided | UI state confirmed |
+|---|---|---|
+| No ARP entry for the IP | `ArpLocalDatasource.findMacAddress` returns `null` → `ArpEntryNotFoundException` | Error card: "…is not visible on the local network…" (widget test + real `arp -a` run below) |
+| Invalid IP format | `LookupRepositoryImpl.lookup` validates before touching ARP → `InvalidIpAddressException` | Error card: `"999.1.1.1" is not a valid IPv4 address.` (new widget test) |
+| Invalid MAC format | Rails-side only -- the app has no way to enter a MAC directly, it only ever comes from a real ARP entry that already passed `normalizeMacAddress`. Covered by `spec/requests/lookups_spec.rb` (422 `invalid_mac_address`) and re-verified live with `curl` in Milestone 1. `LookupRemoteDatasource`'s 422-body mapping is now also unit-tested directly (see above) so this would still degrade gracefully if it were ever reachable. | N/A in the live GUI; Rails returns `422 { error: { code: "invalid_mac_address", ... } }` |
+| Both vendor providers down | Rails still returns `201` with `status: "error"` (this is a *successful* HTTP response, not a thrown exception) | Result card renders normally with a red "lookup failed" chip and "Unknown" vendor -- confirmed this does **not** hit the error-banner path (new widget test distinguishing it from the two exception-driven cases above) |
+
+**Additional live check (not part of the automated suite):** wrote and ran a throwaway script exercising the
+real `Process.run('arp', ['-a'])` path (the one thing no unit test touches, since `parseArpOutput` is tested
+against fixed strings) against this machine's actual ARP table -- confirmed a known IP (`192.168.12.1`)
+resolves to its real MAC and an IP absent from the table (`192.168.12.99`) returns `null`. Deleted the script
+afterward; it wasn't meant to be part of the repo.
+
+Result: 49 Flutter tests passing (10 new), 54 Rails specs still passing, `flutter analyze` clean.
