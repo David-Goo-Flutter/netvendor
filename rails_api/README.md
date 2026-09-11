@@ -10,5 +10,5 @@ the `GET`/`POST` split rationale, and how to run both halves together. Quick sta
 bundle install
 bin/rails db:create db:migrate
 bin/rails server          # http://localhost:3000
-bundle exec rspec         # 54 examples
+bundle exec rspec         # 81 examples
 ```

@@ -69,7 +69,7 @@ Every error response has the shape `{ "error": { "code": "...", "message": "..."
 
 ```bash
 cd rails_api
-bundle exec rspec      # 54 examples
+bundle exec rspec      # 81 examples
 ```
 
 All external vendor-API calls are blocked by WebMock, so the suite passes regardless of those

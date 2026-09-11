@@ -166,3 +166,24 @@ Created `davidsdream/netvendor` as **public** via `gh repo create --source=. --r
 pushed `main`, and confirmed via `gh repo view --json visibility` that it's actually public with
 `main` as the default branch. Did not send the reviewer invite -- that needs their GitHub handle
 or email, which wasn't provided yet.
+
+## Catch-up: `MacAddress` direct unit spec
+
+Got a queued prompt (`cli-prompt-tests.md`) asking me to check whether `MacAddress`
+(`app/models/mac_address.rb`) had its own direct unit spec before Milestones 4-5, and to add one
+if it was only exercised indirectly. This prompt turned out to be earlier in the queue than the
+"finish" one already handled -- everything else it asked for (the ARP parser + its tests, the
+repository/controller/widget tests, `mocktail` as a dev dependency, the README's test-scope note)
+was already done in Milestones 3-8. Checked the repo directly rather than assuming either way:
+`spec/models/` only had `lookup_spec.rb`, so `MacAddress.normalize`/`.locally_administered?` were
+indeed only ever exercised indirectly (through `Lookup`'s normalization and
+`VendorLookupService`'s locally-administered short-circuit test).
+
+Added `spec/models/mac_address_spec.rb` directly: all four accepted input formats
+(colon/dash-separated, unpadded octets, Cisco-dotted, bare hex) plus invalid input for
+`.normalize`, and `.locally_administered?` against a real captured example
+(`92:90:ae:e9:5f:6b`), the canonical `02:00:00:00:00:00` textbook case, a real manufacturer MAC
+(expected `false`), a multicast-but-not-locally-administered address (bit 0 vs bit 1, to make sure
+the bit check isn't accidentally testing the wrong bit), and invalid input (returns `false`, not
+an exception). 27 new examples; 81 total, 0 failures; RuboCop clean. Bumped the spec count in both
+READMEs from 54 to 81.
