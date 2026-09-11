@@ -1,0 +1,8 @@
+# --- Editor / OS ---
+.DS_Store
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/*
+!.vscode/extensions.json
