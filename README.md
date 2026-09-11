@@ -107,6 +107,15 @@ detection, the Dio HTTP client, and `LookupRepositoryImpl` composing them) or `p
 (Riverpod providers, the screen, widgets) — `presentation → domain ← data`. This is what lets
 the repository, controller, and widget tests each mock only the layer directly below them.
 
+**Deliberate test-scope choice:** no automated test drives the app against a live, running Rails
+server — the widget tests' mocked-`LookupRepository` boundary is the intended ceiling for the
+automated suite, not a gap to fill in later. `LookupRemoteDatasource`'s HTTP-error mapping is
+still verified directly (against a mocked `Dio`, not a mocked datasource), and the ARP parser is
+tested against real captured `arp -a` output, so the boundary sits at "the network," not at
+anything ARP- or vendor-response-shape-related. The one thing genuinely outside that boundary —
+whether the live GUI itself works end-to-end — is covered by manual verification instead; see
+"Known limitations" below.
+
 ## Known limitations
 
 - **Linux desktop is scaffolded, not verified.** `flutter create` targeted both macOS and Linux,

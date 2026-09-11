@@ -187,3 +187,15 @@ Added `spec/models/mac_address_spec.rb` directly: all four accepted input format
 the bit check isn't accidentally testing the wrong bit), and invalid input (returns `false`, not
 an exception). 27 new examples; 81 total, 0 failures; RuboCop clean. Bumped the spec count in both
 READMEs from 54 to 81.
+
+## Catch-up: state the deliberate Flutter test-scope choice in the README
+
+The same queued test-plan document (`Claude outputs/test-plan.md`) also asked that a specific
+design decision be stated in the README "if asked": no automated test drives the app against a
+live, running Rails server -- the widget tests' mocked-`LookupRepository` boundary is the
+*intended* ceiling for the suite, not a gap. That framing was implicit (the "Known limitations"
+section talked about the one thing outside it) but never said outright, so added a short
+paragraph to the README's Flutter Tests section making it explicit, and noting that the boundary
+specifically sits at "the network" rather than at ARP or vendor-response parsing -- both of those
+are independently covered (ARP against real captured output, HTTP-error mapping against a mocked
+`Dio` rather than a mocked datasource) inside that same boundary.
