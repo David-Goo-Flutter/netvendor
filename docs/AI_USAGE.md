@@ -61,7 +61,7 @@ per the plan's own scope note), `AsyncNotifier` for the controller, mocktail for
 - `lib/utils/mac_address.dart` / `ip_address.dart` -- pure validation/normalization, mirroring the Rails
   `MacAddress` module so both sides agree on what's a valid MAC/IPv4 and on canonical MAC formatting.
 - `domain/exceptions/lookup_exceptions.dart` and `data/exceptions/lookup_api_exception.dart` -- the plan's
-  "명확한 에러 메시지" requirement needed a real type for the repository to throw and the controller's
+  "clear error message" requirement needed a real type for the repository to throw and the controller's
   `AsyncError` to carry; `LookupRepositoryImpl` translates data-layer exceptions into domain ones so
   `LookupResultCard` can show a specific message without knowing whether ARP, this machine's network, or
   the API request failed.
